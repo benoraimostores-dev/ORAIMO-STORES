@@ -760,6 +760,26 @@ function render() {
 }
 
 function attachEvents() {
+  // Global Password Visibility Eye Toggle (works across all re-renders)
+  document.removeEventListener("click", handlePasswordToggle);
+  document.addEventListener("click", handlePasswordToggle);
+
+  function handlePasswordToggle(e) {
+    const btn = e.target.closest(".password-toggle");
+    if (!btn) return;
+    
+    const targetId = btn.getAttribute("data-target");
+    const input = document.getElementById(targetId);
+    if (input) {
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🔒"; 
+      } else {
+        input.type = "password";
+        btn.textContent = "👁️"; 
+      }
+    }
+  }
   // Navigation
   document.querySelectorAll("#nav-shop, #nav-shop-desktop, #m-shop, #f-shop, #footer-shop").forEach(el => el?.addEventListener("click", () => navigate("shop")));
   document.querySelectorAll("#nav-track-desktop, #m-track, #f-track, #hero-track-btn").forEach(el => el?.addEventListener("click", () => navigate("tracking")));
