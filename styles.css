@@ -105,12 +105,20 @@ input, textarea, select { font: inherit; }
 .add-btn { background: var(--bg); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px; color: var(--primary); transition: all 0.2s; }
 .add-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
 
-/* Benefits */
-.benefits { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto 3rem; padding: 0 2rem; }
+/* --- Keep your existing rules --- */
+.benefits { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto 3rem; padding: 0 2rem; width: 100%; }
 .benefits > div { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px; }
 .benefits svg { color: var(--accent); margin-bottom: 4px; }
 .benefits b { font-size: 0.95rem; color: var(--primary); }
 .benefits span { font-size: 0.85rem; color: var(--text-muted); }
+
+/* --- Add this desktop override below them --- */
+@media (min-width: 769px) {
+  .benefits {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 3rem;
+  }
+}
 
 /* Buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.85rem 1.5rem; border-radius: var(--radius); font-weight: 700; font-size: 0.95rem; transition: all 0.2s; text-decoration: none; cursor: pointer; }
