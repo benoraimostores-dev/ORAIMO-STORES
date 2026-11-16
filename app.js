@@ -7,14 +7,14 @@ const settings = {
   mpesaRecipient: config.MPESA_RECIPIENT || "Uncle Ben Oraimo",
   currency: config.CURRENCY || "KES"
 };
-
 const supabaseConfigured = Boolean(
   config.SUPABASE_URL &&
-  config.SUPABASE_URL.startsWith("https://vcvgieteaoxxzwjxasvh.supabase.co") &&
-  !config.SUPABASE_URL.includes("https://vcvgieteaoxxzwjxasvh.supabase.co") &&
+  config.SUPABASE_URL.startsWith("https://") &&
+  !config.SUPABASE_URL.includes("YOUR_") &&
   config.SUPABASE_ANON_KEY &&
-  !config.SUPABASE_ANON_KEY.includes("sb_publishable_MRi1WYdF-N76hbhtl8hH1Q_zW8AhT8H")
+  !config.SUPABASE_ANON_KEY.includes("YOUR_")
 );
+
 const supabaseReady = supabaseConfigured && Boolean(window.supabase?.createClient);
 const supabase = supabaseReady
   ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY)
