@@ -492,13 +492,26 @@ function render() {
         <span class="eyebrow">CREATE ACCOUNT</span>
         <h1>Join Uncle Ben Oraimo</h1>
         <form class="form" id="signup-form">
-          <label>Full Name<input name="full_name" required placeholder="Your name"/></label>
-          <label>Email Address<input type="email" name="email" required placeholder="you@example.com"/></label>
-          <label>Phone Number<input type="tel" name="phone" required placeholder="07XX XXX XXX"/></label>
-          <label>Password<input type="password" name="password" required minlength="6" placeholder="At least 6 characters"/></label>
-          <label>Confirm Password<input type="password" name="confirm_password" required placeholder="Re-enter password"/></label>
-          <button class="btn primary full" type="submit">Create Account</button>
-        </form>
+  <label>Full Name<input name="full_name" required placeholder="Your name"/></label>
+  <label>Email Address<input type="email" name="email" required placeholder="you@example.com"/></label>
+  <label>Phone Number<input type="tel" name="phone" required placeholder="07XX XXX XXX"/></label>
+  
+  <label>Password
+    <div class="password-wrapper">
+      <input type="password" name="password" id="signup-password" required minlength="6" placeholder="At least 6 characters"/>
+      <button type="button" class="password-toggle" data-target="signup-password">👁️</button>
+    </div>
+  </label>
+  
+  <label>Confirm Password
+    <div class="password-wrapper">
+      <input type="password" name="confirm_password" id="signup-confirm" required placeholder="Re-enter password"/>
+      <button type="button" class="password-toggle" data-target="signup-confirm">👁️</button>
+    </div>
+  </label>
+  
+  <button class="btn primary full" type="submit">Create Account</button>
+</form>
         <p style="text-align:center; margin-top:1rem;">
           Already have an account? <button class="text-btn" id="go-login">Sign in</button>
         </p>
@@ -510,10 +523,15 @@ function render() {
         <span class="eyebrow">WELCOME BACK</span>
         <h1>Sign in to your account</h1>
         <form class="form" id="login-form">
-          <label>Email Address<input type="email" name="email" required placeholder="you@example.com"/></label>
-          <label>Password<input type="password" name="password" required placeholder="••••••••"/></label>
-          <button class="btn primary full" type="submit">Sign In</button>
-        </form>
+  <label>Email Address<input type="email" name="email" required placeholder="you@example.com"/></label>
+  <label>Password
+    <div class="password-wrapper">
+      <input type="password" name="password" id="login-password" required placeholder="••••••••"/>
+      <button type="button" class="password-toggle" data-target="login-password">👁️</button>
+    </div>
+  </label>
+  <button class="btn primary full" type="submit">Sign In</button>
+</form>
         <div style="display:flex; justify-content:space-between; margin-top:1rem; align-items:center;">
           <button class="text-btn" id="forgot-password-btn">Forgot Password?</button>
           <button class="text-btn" id="go-signup">Create an Account</button>
@@ -613,10 +631,15 @@ function render() {
         <h1>Admin dashboard</h1>
         ${!state.session ? `
           <form class="form admin-login" id="admin-login-form">
-            <label>Admin email<input type="email" id="admin-email" value="${state.adminEmail}" required/></label>
-            <label>Password<input type="password" id="admin-password" value="${state.adminPassword}" required/></label>
-            <button class="btn primary">Sign in</button>
-          </form>
+  <label>Admin email<input type="email" id="admin-email" value="${state.adminEmail}" required/></label>
+  <label>Password
+    <div class="password-wrapper">
+      <input type="password" id="admin-password-input" value="${state.adminPassword}" required/>
+      <button type="button" class="password-toggle" data-target="admin-password-input">👁️</button>
+    </div>
+  </label>
+  <button class="btn primary">Sign in</button>
+</form>
         ` : `
           <div class="admin-top">
             <p>Signed in as ${state.session.user.email}</p>
@@ -753,7 +776,7 @@ function attachEvents() {
   document.getElementById("go-login")?.addEventListener("click", () => navigate("login"));
   document.getElementById("go-signup")?.addEventListener("click", () => navigate("signup"));
   document.getElementById("forgot-password-btn")?.addEventListener("click", handlePasswordReset);
-  
+
   // Search & Categories
   document.getElementById("search-input")?.addEventListener("input", e => {
     const cursor = e.target.selectionStart;
