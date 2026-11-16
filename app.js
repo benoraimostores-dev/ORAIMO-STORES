@@ -104,16 +104,97 @@ function navigate(p) {
   render();
 }
 
+
 function addToCart(p) {
+  // Require login to add items to cart
+  if (!state.session) {
+    state.notice = "Please sign in or create an account to add items to your cart.";
+    navigate("login");
+    return;
+  }
   state.cart[p.id] = (state.cart[p.id] || 0) + 1;
   state.notice = `${p.name} added to cart`;
   render();
+}
+
+function proceedToCheckout() {
+  // Require login for online checkout
+  if (!state.session) {
+    state.notice = "Please sign in to proceed with your order.";
+    navigate("login");
+    return;
+  }
+  navigate("checkout");
 }
 
 function changeQty(id, delta) {
   const n = (state.cart[id] || 0) + delta;
   if (n <= 0) delete state.cart[id];
   else state.cart[id] = n;
+  render();
+}
+
+async function handleSignUp(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const email = fd.get("email");
+  const password = fd.get("password");
+  const confirmPassword = fd.get("confirm_password");
+  const phone = fd.get("phone");
+  const fullName = fd.get("full_name");
+
+  if (password !== confirmPassword) {
+    state.notice = "Passwords do not match.";
+    render();
+    return;
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName, phone: phone }
+    }
+  });
+
+  if (error) {
+    state.notice = error.message;
+  } else {
+    state.notice = "Account created successfully! Please check your email or sign in.";
+    navigate("login");
+  }
+  render();
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const email = fd.get("email");
+  const password = fd.get("password");
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    state.notice = error.message;
+  } else {
+    state.notice = "Signed in successfully!";
+    navigate("shop");
+  }
+  render();
+}
+
+async function handlePasswordReset() {
+  const email = prompt("Enter your account email address for password reset:");
+  if (!email) return;
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin,
+  });
+
+  if (error) {
+    state.notice = error.message;
+  } else {
+    state.notice = "Password reset instructions sent to your email.";
+  }
   render();
 }
 
@@ -217,22 +298,57 @@ async function adminUpdate(table, id, values) {
 async function addProduct(e) {
   e.preventDefault();
   const fd = new FormData(e.target);
+  const file = fd.get("image_file");
+
+  if (!file || file.size === 0) {
+    state.notice = "Please select an image file to upload.";
+    render();
+    return;
+  }
+
+  // Generate a unique filename using a UUID
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${crypto.randomUUID()}.${fileExt}`;
+  const filePath = `products/${fileName}`;
+
+  state.notice = "Uploading media to storage...";
+  render();
+
+  // 1. Upload media directly to Supabase Storage
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('product-images')
+    .upload(filePath, file);
+
+  if (uploadError) {
+    state.notice = `Upload failed: ${uploadError.message}`;
+    render();
+    return;
+  }
+
+  // 2. Obtain the permanent public URL
+  const { data: urlData } = supabase.storage
+    .from('product-images')
+    .getPublicUrl(filePath);
+
+  // 3. Save product record with the uploaded image URL
   const row = {
     name: fd.get("name"),
     category: fd.get("category"),
     description: fd.get("description"),
     price: Number(fd.get("price")),
-    image_url: fd.get("image_url"),
+    image_url: urlData.publicUrl,
     stock: Number(fd.get("stock")),
     is_active: true
   };
+
   const { error } = await supabase.from("products").insert(row);
-  if (error) state.notice = error.message;
-  else {
+  if (error) {
+    state.notice = error.message;
+  } else {
     e.target.reset();
-    loadAdmin();
-    loadProducts();
-    state.notice = "Product added.";
+    state.notice = "Product and media added successfully!";
+    await loadAdmin();
+    await loadProducts();
   }
   render();
 }
@@ -368,6 +484,40 @@ function render() {
           <button class="btn primary full" id="proceed-checkout-btn">Proceed to checkout</button>
           <button class="btn whatsapp full" id="whatsapp-order-btn">💬 Order via WhatsApp instead</button>
         `}
+      </main>
+    `;
+    } else if (state.page === "signup") {
+    mainContent = `
+      <main class="section narrow">
+        <span class="eyebrow">CREATE ACCOUNT</span>
+        <h1>Join Uncle Ben Oraimo</h1>
+        <form class="form" id="signup-form">
+          <label>Full Name<input name="full_name" required placeholder="Your name"/></label>
+          <label>Email Address<input type="email" name="email" required placeholder="you@example.com"/></label>
+          <label>Phone Number<input type="tel" name="phone" required placeholder="07XX XXX XXX"/></label>
+          <label>Password<input type="password" name="password" required minlength="6" placeholder="At least 6 characters"/></label>
+          <label>Confirm Password<input type="password" name="confirm_password" required placeholder="Re-enter password"/></label>
+          <button class="btn primary full" type="submit">Create Account</button>
+        </form>
+        <p style="text-align:center; margin-top:1rem;">
+          Already have an account? <button class="text-btn" id="go-login">Sign in</button>
+        </p>
+      </main>
+    `;
+    } else if (state.page === "login") {
+    mainContent = `
+      <main class="section narrow">
+        <span class="eyebrow">WELCOME BACK</span>
+        <h1>Sign in to your account</h1>
+        <form class="form" id="login-form">
+          <label>Email Address<input type="email" name="email" required placeholder="you@example.com"/></label>
+          <label>Password<input type="password" name="password" required placeholder="••••••••"/></label>
+          <button class="btn primary full" type="submit">Sign In</button>
+        </form>
+        <div style="display:flex; justify-content:space-between; margin-top:1rem; align-items:center;">
+          <button class="text-btn" id="forgot-password-btn">Forgot Password?</button>
+          <button class="text-btn" id="go-signup">Create an Account</button>
+        </div>
       </main>
     `;
   } else if (state.page === "checkout") {
@@ -509,14 +659,17 @@ function render() {
           </div>
           <h2>Products</h2>
           <form class="product-admin-form" id="add-product-form">
-            <input name="name" placeholder="Product name" required/>
-            <input name="category" placeholder="Category" required/>
-            <input name="price" type="number" min="0" placeholder="Price (KES)" required/>
-            <input name="stock" type="number" min="0" placeholder="Stock" required/>
-            <input name="image_url" placeholder="Image URL"/>
-            <textarea name="description" placeholder="Description"></textarea>
-            <button class="btn primary">Add product</button>
-          </form>
+  <input name="name" placeholder="Product name" required/>
+  <input name="category" placeholder="Category" required/>
+  <input name="price" type="number" min="0" placeholder="Price (KES)" required/>
+  <input name="stock" type="number" min="0" placeholder="Stock" required/>
+  
+  <!-- File selection for images/videos -->
+  <input name="image_file" type="file" accept="image/*,video/*" required/>
+  
+  <textarea name="description" placeholder="Description"></textarea>
+  <button class="btn primary">Add product</button>
+</form>
           <div class="admin-table">
             ${state.adminProducts.map(p => `
               <div class="admin-product" key="${p.id}">
@@ -534,9 +687,9 @@ function render() {
     <div class="app">
       <header class="topbar">
         <div class="brand" id="nav-shop">
-          <span class="brand-mark">UB</span>
-          <span>UNCLE BEN <b>ORAIMO</b><small>SMART TECHNOLOGY. BETTER LIVING.</small></span>
-        </div>
+  <img src="oraimologo.png" alt="Oraimo Logo" style="height: 38px; object-fit: contain;" />
+  <span>UNCLE BEN <b>ORAIMO</b><small>SMART TECHNOLOGY. BETTER LIVING.</small></span>
+</div>
         <nav class="desktop-nav">
           <button class="${state.page === 'shop' ? 'active' : ''}" id="nav-shop-desktop">Shop</button>
           <button class="${state.page === 'tracking' ? 'active' : ''}" id="nav-track-desktop">Track order</button>
