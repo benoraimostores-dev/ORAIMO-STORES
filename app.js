@@ -2,18 +2,18 @@ import { Search, ShoppingBag, Menu, X, MessageCircle, ShieldCheck, Truck, User, 
 
 const config = window.APP_CONFIG || {};
 const settings = {
-  whatsapp: (config.WHATSAPP_NUMBER || "").replace(/\D/g, ""),
-  mpesaNumber: config.MPESA_NUMBER || "0757787383",
+  whatsapp: (config.WHATSAPP_NUMBER || "254759649071").replace(/\D/g, ""),
+  mpesaNumber: config.MPESA_NUMBER || "0759649071",
   mpesaRecipient: config.MPESA_RECIPIENT || "Uncle Ben Oraimo",
   currency: config.CURRENCY || "KES"
 };
 
 const supabaseConfigured = Boolean(
   config.SUPABASE_URL &&
-  config.SUPABASE_URL.startsWith("https://") &&
-  !config.SUPABASE_URL.includes("YOUR_") &&
+  config.SUPABASE_URL.startsWith("https://vcvgieteaoxxzwjxasvh.supabase.co") &&
+  !config.SUPABASE_URL.includes("https://vcvgieteaoxxzwjxasvh.supabase.co") &&
   config.SUPABASE_ANON_KEY &&
-  !config.SUPABASE_ANON_KEY.includes("YOUR_")
+  !config.SUPABASE_ANON_KEY.includes("sb_publishable_MRi1WYdF-N76hbhtl8hH1Q_zW8AhT8H")
 );
 const supabaseReady = supabaseConfigured && Boolean(window.supabase?.createClient);
 const supabase = supabaseReady
