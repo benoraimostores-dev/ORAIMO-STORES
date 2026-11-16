@@ -747,7 +747,13 @@ function attachEvents() {
   document.getElementById("mobile-menu-toggle")?.addEventListener("click", () => { state.drawer = !state.drawer; render(); });
   document.getElementById("close-notice")?.addEventListener("click", () => { state.notice = ""; render(); });
   document.getElementById("explore-btn")?.addEventListener("click", () => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" }));
-
+// Auth Form & Navigation Events
+  document.getElementById("signup-form")?.addEventListener("submit", handleSignUp);
+  document.getElementById("login-form")?.addEventListener("submit", handleLogin);
+  document.getElementById("go-login")?.addEventListener("click", () => navigate("login"));
+  document.getElementById("go-signup")?.addEventListener("click", () => navigate("signup"));
+  document.getElementById("forgot-password-btn")?.addEventListener("click", handlePasswordReset);
+  
   // Search & Categories
   document.getElementById("search-input")?.addEventListener("input", e => {
     const cursor = e.target.selectionStart;
