@@ -10,10 +10,10 @@ const settings = {
 
 const supabaseConfigured = Boolean(
   config.SUPABASE_URL &&
-  config.SUPABASE_URL.startsWith("https://") &&
-  !config.SUPABASE_URL.includes("YOUR_") &&
+  config.SUPABASE_URL.startsWith("https://vcvgieteaoxxzwjxasvh.supabase.co") &&
+  !config.SUPABASE_URL.includes("https://vcvgieteaoxxzwjxasvh.supabase.co") &&
   config.SUPABASE_ANON_KEY &&
-  !config.SUPABASE_ANON_KEY.includes("YOUR_")
+  !config.SUPABASE_ANON_KEY.includes("sb_publishable_MRi1WYdF-N76hbhtl8hH1Q_zW8AhT8H")
 );
 const supabaseReady = supabaseConfigured && Boolean(window.supabase?.createClient);
 const supabase = supabaseReady
@@ -23,13 +23,7 @@ const supabase = supabaseReady
 const money = n => `${settings.currency} ${Number(n || 0).toLocaleString("en-KE")}`;
 
 const fallbackProducts = [
-  {id:"demo-1",name:"Oraimo FreePods",category:"Audio",price:2500,description:"True wireless earbuds for everyday listening.",image_url:"https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=900",stock:20},
-  {id:"demo-2",name:"Oraimo Power Bank",category:"Power",price:3200,description:"Portable power for your devices on the go.",image_url:"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=900",stock:15},
-  {id:"demo-3",name:"Oraimo Smart Watch",category:"Smart Devices",price:4500,description:"Stay connected and keep track of your activity.",image_url:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=900",stock:10},
-  {id:"demo-4",name:"Oraimo Headphones",category:"Audio",price:3800,description:"Comfortable headphones with rich sound.",image_url:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900",stock:8},
-  {id:"demo-5",name:"Oraimo Charging Cable",category:"Power",price:650,description:"Durable cable for convenient charging.",image_url:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900",stock:30},
-  {id:"demo-6",name:"Oraimo Grooming Trimmer",category:"Personal Care",price:2100,description:"A practical grooming accessory.",image_url:"https://images.unsplash.com/photo-1621607512214-68297480165e?w=900",stock:12}
-];
+  ];
 
 // App State
 let state = {
@@ -461,7 +455,7 @@ function render() {
       <main class="section admin">
         <span class="eyebrow">STORE MANAGEMENT</span>
         <h1>Admin dashboard</h1>
-        {!state.session ? `
+        ${!state.session ? `
           <form class="form admin-login" id="admin-login-form">
             <label>Admin email<input type="email" id="admin-email" value="${state.adminEmail}" required/></label>
             <label>Password<input type="password" id="admin-password" value="${state.adminPassword}" required/></label>
