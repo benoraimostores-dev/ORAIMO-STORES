@@ -182,9 +182,10 @@ async function handleLogin(e) {
   render();
 }
 
-async function handlePasswordReset() {
-  const email = prompt("Enter your account email address for password reset:");
-  if (!email) return;
+async function handlePasswordReset(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const email = fd.get("reset_email");
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin,
@@ -193,8 +194,10 @@ async function handlePasswordReset() {
   if (error) {
     state.notice = error.message;
   } else {
-    state.notice = "Password reset instructions sent to your email.";
+    state.notice = "Password reset link sent! Check your email.";
   }
+  
+  state.showResetModal = false;
   render();
 }
 
@@ -752,10 +755,28 @@ function render() {
         </div>
         <small>© ${new Date().getFullYear()} Uncle Ben Oraimo. Product names and trademarks belong to their respective owners.</small>
       </footer>
+
+      <!-- Password Reset Modal -->
+<div id="reset-modal" class="modal-overlay" style="display: ${state.showResetModal ? 'flex' : 'none'};">
+  <div class="modal-card">
+    <h3>Reset Your Password</h3>
+    <p>Enter your account email address and we'll send you a password reset link.</p>
+    <form id="modal-reset-form">
+      <label>Email Address
+        <input type="email" name="reset_email" required placeholder="you@example.com" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" id="close-reset-modal">Cancel</button>
+        <button type="submit" class="btn primary">Send Reset Link</button>
+      </div>
+    </form>
+  </div>
+</div>
+
       <button class="floating-cart" id="floating-cart-btn">🛒 Cart (${cartCount})</button>
     </div>
   `;
-  
+
   attachEvents();
 }
 
@@ -781,6 +802,20 @@ function attachEvents() {
     }
   }
   // Navigation
+  // Open Reset Modal
+  document.getElementById("forgot-password-btn")?.addEventListener("click", () => {
+    state.showResetModal = true;
+    render();
+  });
+
+  // Close / Cancel Reset Modal
+  document.getElementById("close-reset-modal")?.addEventListener("click", () => {
+    state.showResetModal = false;
+    render();
+  });
+
+  // Submit Password Reset Form
+  document.getElementById("modal-reset-form")?.addEventListener("submit", handlePasswordReset);
   document.querySelectorAll("#nav-shop, #nav-shop-desktop, #m-shop, #f-shop, #footer-shop").forEach(el => el?.addEventListener("click", () => navigate("shop")));
   document.querySelectorAll("#nav-track-desktop, #m-track, #f-track, #hero-track-btn").forEach(el => el?.addEventListener("click", () => navigate("tracking")));
   document.querySelectorAll("#nav-contact-desktop, #m-contact, #f-contact").forEach(el => el?.addEventListener("click", () => navigate("contact")));
@@ -795,8 +830,7 @@ function attachEvents() {
   document.getElementById("login-form")?.addEventListener("submit", handleLogin);
   document.getElementById("go-login")?.addEventListener("click", () => navigate("login"));
   document.getElementById("go-signup")?.addEventListener("click", () => navigate("signup"));
-  document.getElementById("forgot-password-btn")?.addEventListener("click", handlePasswordReset);
-
+  
   // Search & Categories
   document.getElementById("search-input")?.addEventListener("input", e => {
     const cursor = e.target.selectionStart;
