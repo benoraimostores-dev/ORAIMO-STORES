@@ -710,14 +710,14 @@ function render() {
     <div class="app">
       <header class="topbar">
         <div class="brand" id="nav-shop">
-  <img src="oraimologo.png" alt="Oraimo Logo" style="height: 38px; object-fit: contain;" />
-  <span>UNCLE BEN <b>ORAIMO</b><small>SMART TECHNOLOGY. BETTER LIVING.</small></span>
-</div>
+          <img src="oraimologo.png" alt="Oraimo Logo" style="height: 38px; width: auto; object-fit: contain;" />
+          <span>UNCLE BEN <b>ORAIMO</b><small>SMART TECHNOLOGY. BETTER LIVING.</small></span>
+        </div>
         <nav class="desktop-nav">
           <button class="${state.page === 'shop' ? 'active' : ''}" id="nav-shop-desktop">Shop</button>
           <button class="${state.page === 'tracking' ? 'active' : ''}" id="nav-track-desktop">Track order</button>
           <button class="${state.page === 'contact' ? 'active' : ''}" id="nav-contact-desktop">Contact</button>
-          <button class="${state.page === 'admin' ? 'active' : ''}" id="nav-admin-desktop">Admin</button>
+          ${state.session ? `<button class="${state.page === 'admin' ? 'active' : ''}" id="nav-admin-desktop">Admin</button>` : ''}
         </nav>
         <div class="head-actions">
           <button class="icon-btn" id="nav-cart-btn" aria-label="Cart">
@@ -731,7 +731,7 @@ function render() {
           <button id="m-shop">Shop</button>
           <button id="m-track">Track order</button>
           <button id="m-contact">Contact</button>
-          <button id="m-admin">Admin</button>
+          ${state.session ? `<button id="m-admin">Admin</button>` : ''}
         </div>
       ` : ""}
       ${state.notice ? `
@@ -740,7 +740,7 @@ function render() {
       ${mainContent}
       <footer>
         <div class="brand" id="footer-shop">
-          <span class="brand-mark">UB</span>
+          <img src="oraimologo.png" alt="Oraimo Logo" style="height: 38px; width: auto; object-fit: contain;" />
           <span>UNCLE BEN <b>ORAIMO</b><small>SMART TECHNOLOGY. BETTER LIVING.</small></span>
         </div>
         <p>Quality accessories. Convenient shopping. Personal service.</p>
@@ -748,14 +748,14 @@ function render() {
           <button id="f-shop">Shop</button>
           <button id="f-track">Track order</button>
           <button id="f-contact">Contact</button>
-          <button id="f-admin">Admin</button>
+          ${state.session ? `<button id="f-admin">Admin</button>` : ''}
         </div>
         <small>© ${new Date().getFullYear()} Uncle Ben Oraimo. Product names and trademarks belong to their respective owners.</small>
       </footer>
       <button class="floating-cart" id="floating-cart-btn">🛒 Cart (${cartCount})</button>
     </div>
   `;
-
+  
   attachEvents();
 }
 
